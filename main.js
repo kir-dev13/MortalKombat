@@ -27,14 +27,29 @@ function createPlayer(className, obj) {
         parentSelector,
         element,
         elementName = "",
-        className = ""
+        className = "",
+        ...args
     ) {
         const parent = document.querySelector(parentSelector);
         window[elementName] = document.createElement(element);
         parent.appendChild(window[elementName]).classList.add(className);
+        args.forEach((item) => {
+            switch (item) {
+                case obj.img:
+                    window[elementName].setAttribute("src", args);
+                    break;
+                case obj.hp:
+                    window[elementName].style.width = obj.hp + "%";
+                    break;
+                case obj.name:
+                    window[elementName].innerText = obj.name;
+                    break;
+            }
+        });
     }
 
     appendElement(".arenas", "div", obj.name + "Fighter", className);
+    //div с игроком
 
     appendElement(
         `.${className}`,
@@ -42,34 +57,38 @@ function createPlayer(className, obj) {
         obj.name + "Progressbar",
         "progressbar"
     );
+    // прогресс бар
 
     appendElement(`.${className}`, "div", obj.name + "Character", "character");
+    // div с картинкой внутри
 
     appendElement(
         `.${className} .character`,
         "img",
         obj.name + "Img",
-        "playerImg"
+        "playerImg",
+        obj.img
     );
-
-    window[`${obj.name}Img`].setAttribute("src", obj.img);
+    //картинка
 
     appendElement(
         `.${className} .progressbar`,
         "div",
         obj.name + "Life",
-        "life"
+        "life",
+        obj.hp
     );
-    window[`${obj.name}Life`].style.width = obj.hp + "%";
+    //остаток жизней
 
     appendElement(
         `.${className} .progressbar`,
         "div",
         obj.name + "PlayerName",
-        "name"
+        "name",
+        obj.name
     );
-    window[`${obj.name}PlayerName`].innerText = obj.name;
+    //имя
 }
-
+// console.log(ScorpionFighter);
 createPlayer("player1", player1);
 createPlayer("player2", player2);
