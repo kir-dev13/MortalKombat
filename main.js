@@ -1,7 +1,7 @@
 "use strict";
 
 const player1 = {
-    name: "Scorpion",
+    name: "Вася",
     hp: 100,
     img: "http://reactmarathon-api.herokuapp.com/assets/scorpion.gif",
     weapon: ["гарпун", "огонь"],
@@ -12,7 +12,7 @@ const player1 = {
 };
 
 const player2 = {
-    name: "Subzero",
+    name: "Коля",
     hp: 80,
     img: "http://reactmarathon-api.herokuapp.com/assets/subzero.gif",
     weapon: ["лёд", "снег"],
@@ -33,10 +33,12 @@ function createPlayer(className, obj) {
         const parent = document.querySelector(parentSelector);
         window[elementName] = document.createElement(element);
         parent.appendChild(window[elementName]).classList.add(className);
+
         args.forEach((item) => {
             switch (item) {
                 case obj.img:
                     window[elementName].setAttribute("src", args);
+
                     break;
                 case obj.hp:
                     window[elementName].style.width = obj.hp + "%";
@@ -87,8 +89,10 @@ function createPlayer(className, obj) {
         "name",
         obj.name
     );
-    //имя
+
+    // console.log(window[`${obj.name}Fighter`]);
+    // console.log(window[`${obj.name}Character`]);
 }
-// console.log(ScorpionFighter);
+
 createPlayer("player1", player1);
 createPlayer("player2", player2);
