@@ -23,72 +23,44 @@ const player2 = {
 };
 
 function createPlayer(className, obj) {
-    function appendElement(
-        parentSelector,
-        element,
-        elementName = "",
-        className = "",
-        ...args
-    ) {
-        const parent = document.querySelector(parentSelector);
-        window[elementName] = document.createElement(element);
-        parent.appendChild(window[elementName]).classList.add(className);
+    function appendElement(parentSelector, element, className = "", ...args) {
+        const elem = document.createElement(element);
+        document
+            .querySelector(parentSelector)
+            .appendChild(elem)
+            .classList.add(className);
 
         args.forEach((item) => {
             switch (item) {
                 case obj.img:
-                    window[elementName].setAttribute("src", args);
-
+                    elem.setAttribute("src", args);
                     break;
                 case obj.hp:
-                    window[elementName].style.width = obj.hp + "%";
+                    elem.style.width = obj.hp + "%";
                     break;
                 case obj.name:
-                    window[elementName].innerText = obj.name;
+                    elem.innerText = obj.name;
                     break;
             }
         });
     }
 
-    appendElement(".arenas", "div", obj.name + "Fighter", className);
+    appendElement(".arenas", "div", className);
     //div с игроком
 
-    appendElement(
-        `.${className}`,
-        "div",
-        obj.name + "Progressbar",
-        "progressbar"
-    );
+    appendElement(`.${className}`, "div", "progressbar");
     // прогресс бар
 
-    appendElement(`.${className}`, "div", obj.name + "Character", "character");
+    appendElement(`.${className}`, "div", "character");
     // div с картинкой внутри
 
-    appendElement(
-        `.${className} .character`,
-        "img",
-        obj.name + "Img",
-        "playerImg",
-        obj.img
-    );
+    appendElement(`.${className} .character`, "img", "playerImg", obj.img);
     //картинка
 
-    appendElement(
-        `.${className} .progressbar`,
-        "div",
-        obj.name + "Life",
-        "life",
-        obj.hp
-    );
+    appendElement(`.${className} .progressbar`, "div", "life", obj.hp);
     //остаток жизней
 
-    appendElement(
-        `.${className} .progressbar`,
-        "div",
-        obj.name + "PlayerName",
-        "name",
-        obj.name
-    );
+    appendElement(`.${className} .progressbar`, "div", "name", obj.name);
 
     // console.log(window[`${obj.name}Fighter`]);
     // console.log(window[`${obj.name}Character`]);
