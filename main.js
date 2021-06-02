@@ -34,41 +34,41 @@ function createPlayer(className, obj) {
         parent.appendChild(window[elementName]).classList.add(className);
     }
 
-    appendElement(".arenas", "div", obj.name + "fighter", className);
+    appendElement(".arenas", "div", obj.name + "Fighter", className);
 
     appendElement(
         `.${className}`,
         "div",
-        obj.name + "progressbar",
+        obj.name + "Progressbar",
         "progressbar"
     );
 
-    appendElement(`.${className}`, "div", obj.name + "character", "character");
+    appendElement(`.${className}`, "div", obj.name + "Character", "character");
 
     appendElement(
         `.${className} .character`,
         "img",
-        obj.name + "img",
+        obj.name + "Img",
         "playerImg"
     );
 
-    window[`${obj.name}img`].setAttribute("src", obj.img);
+    window[`${obj.name}Img`].setAttribute("src", obj.img);
 
     appendElement(
         `.${className} .progressbar`,
         "div",
-        obj.name + "life",
+        obj.name + "Life",
         "life"
     );
-    window[`${obj.name}life`].style.width = obj.hp + "%";
+    window[`${obj.name}Life`].style.width = obj.hp + "%";
 
     appendElement(
         `.${className} .progressbar`,
         "div",
-        obj.name + "playerName",
+        obj.name + "PlayerName",
         "name"
     );
-    window[`${obj.name}playerName`].innerText = obj.name;
+    window[`${obj.name}PlayerName`].innerText = obj.name;
 }
 
 createPlayer("player1", player1);
