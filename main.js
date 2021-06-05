@@ -77,5 +77,26 @@ function createPlayer(playerObj) {
     $name.innerText = playerObj.name;
 }
 
+function changeHP(player) {
+    const playerLife = document.querySelector(
+        ".player" + player.player + " .life"
+    );
+    player.hp -= 20;
+    playerLife.style.width = player.hp + "%";
+    if (player.hp <= 0) {
+        playerLose(player.name);
+    }
+}
+
+function playerLose(name) {
+    const loseTitle = appendElement(".arenas", "div", "loseTitle");
+    loseTitle.innerText = name + " проиграл";
+}
+
+$randomBtn.addEventListener("click", () => {
+    changeHP(player1);
+    changeHP(player2);
+});
+
 createPlayer(player1);
 createPlayer(player2);
