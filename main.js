@@ -4,7 +4,7 @@ const $randomBtn = $arenas.querySelector(".button");
 
 const player1 = {
     player: 1,
-    name: "Вася",
+    name: "Scorpion",
     hp: 100,
     img: "http://reactmarathon-api.herokuapp.com/assets/scorpion.gif",
     weapon: ["гарпун", "огонь"],
@@ -16,8 +16,8 @@ const player1 = {
 
 const player2 = {
     player: 2,
-    name: "Коля",
-    hp: 80,
+    name: "Subzero",
+    hp: 100,
     img: "http://reactmarathon-api.herokuapp.com/assets/subzero.gif",
     weapon: ["лёд", "снег"],
 
@@ -25,6 +25,12 @@ const player2 = {
         console.log(this.name + " fight");
     },
 };
+
+function randomizer(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function appendElement(parentSelector, tag, className = "") {
     const $tag = document.createElement(tag);
@@ -81,21 +87,45 @@ function changeHP(player) {
     const playerLife = document.querySelector(
         ".player" + player.player + " .life"
     );
-    player.hp -= 20;
-    playerLife.style.width = player.hp + "%";
+    player.hp -= randomizer(1, 20);
+
     if (player.hp <= 0) {
-        playerLose(player.name);
+        player.hp = 0;
+        $randomBtn.disabled = true;
     }
+    playerLife.style.width = player.hp + "%";
+
+    // if (player.hp <= 0) {
+    //     player.hp = 0;
+
+    //     $randomBtn.disabled = true;
+    // }
 }
 
-function playerLose(name) {
-    const loseTitle = appendElement(".arenas", "div", "loseTitle");
-    loseTitle.innerText = name + " проиграл";
+function titleWins(...players) {
+    const winsTitle = appendElement(".arenas", "div", "loseTitle");
+    if (players.every((player) => player.hp === 0)) {
+        winsTitle.innerText = "ничья";
+        return;
+    }
+    players.forEach((player) => {
+        if (player.hp === 0) {
+            switch (player.player) {
+                case 1:
+                    winsTitle.innerText = player2.name + " выиграл";
+                    break;
+                case 2:
+                    winsTitle.innerText = player1.name + " выиграл";
+                    break;
+            }
+        }
+    });
 }
 
 $randomBtn.addEventListener("click", () => {
     changeHP(player1);
     changeHP(player2);
+    titleWins(player1, player2);
 });
 
 createPlayer(player1);
