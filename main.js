@@ -8,10 +8,12 @@ const player1 = {
     hp: 100,
     img: "http://reactmarathon-api.herokuapp.com/assets/scorpion.gif",
     weapon: ["гарпун", "огонь"],
+    color: "yellow",
 
     attack() {
         console.log(this.name + " fight");
     },
+    changeHP: changeHP,
 };
 
 const player2 = {
@@ -20,16 +22,37 @@ const player2 = {
     hp: 100,
     img: "http://reactmarathon-api.herokuapp.com/assets/subzero.gif",
     weapon: ["лёд", "снег"],
+    color: "lightblue",
 
     attack() {
         console.log(this.name + " fight");
     },
+    changeHP: changeHP,
 };
 
-function randomizer(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+function changeHP(damageValue) {
+    this.hp -= damageValue;
+    if (this.hp <= 0) {
+        this.hp = 0;
+        $randomBtn.disabled = true;
+    }
+    renderLife.call(this);
+    console.log(
+        `%c${this.name + " нанёс урон " + damageValue}`,
+        `color: ${this.color};`
+    );
+}
+
+function elHP() {
+    return document.querySelector(".player" + this.player + " .life");
+}
+
+function renderLife() {
+    elHP.call(this).style.width = this.hp + "%";
+}
+
+function randomizer(max) {
+    return Math.floor(Math.random() * max) + 1;
 }
 
 function appendElement(parentSelector, tag, className = "") {
@@ -83,33 +106,17 @@ function createPlayer(playerObj) {
     $name.innerText = playerObj.name;
 }
 
-function changeHP(player) {
-    const playerLife = document.querySelector(
-        ".player" + player.player + " .life"
-    );
-    player.hp -= randomizer(1, 20);
-
-    if (player.hp <= 0) {
-        player.hp = 0;
-        $randomBtn.disabled = true;
-    }
-    playerLife.style.width = player.hp + "%";
-
-    // if (player.hp <= 0) {
-    //     player.hp = 0;
-
-    //     $randomBtn.disabled = true;
-    // }
-}
-
 function titleWins(...players) {
-    const winsTitle = appendElement(".arenas", "div", "loseTitle");
     if (players.every((player) => player.hp === 0)) {
+        const winsTitle = appendElement(".arenas", "div", "winTitle");
         winsTitle.innerText = "ничья";
+        createReloadButton();
         return;
     }
     players.forEach((player) => {
         if (player.hp === 0) {
+            createReloadButton();
+            const winsTitle = appendElement(".arenas", "div", "winTitle");
             switch (player.player) {
                 case 1:
                     winsTitle.innerText = player2.name + " выиграл";
@@ -122,11 +129,22 @@ function titleWins(...players) {
     });
 }
 
-$randomBtn.addEventListener("click", () => {
-    changeHP(player1);
-    changeHP(player2);
-    titleWins(player1, player2);
-});
+function createReloadButton() {
+    appendElement(".arenas", "div", "reloadWrap");
+    const restartBtn = appendElement(".reloadWrap", "button", "button");
+    restartBtn.innerText = "Restart";
+    restartBtn.addEventListener("click", () => {
+        window.location.reload();
+    });
+}
 
 createPlayer(player1);
 createPlayer(player2);
+
+$randomBtn.addEventListener("click", () => {
+    player1.changeHP(randomizer(20));
+    player2.changeHP(randomizer(20));
+    // changeHP.call(player1, randomizer(20));
+    // changeHP.call(player2, randomizer(20));
+    titleWins(player1, player2);
+});
