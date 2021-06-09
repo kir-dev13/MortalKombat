@@ -22,6 +22,8 @@ html {
     padding: 0;
 }
 
+@import "animate.css";
+
 body {
     background-color: #424542;
     margin: 0;
@@ -264,10 +266,11 @@ body {
 
 .winTitle {
     position: absolute;
+    width: 100%;
+    text-align: center;
     top: 25%;
-    left: 50%;
+    left: 0%;
     font-size: 36px;
-    transform: translate(-50%, 0%);
     text-transform: uppercase;
     z-index: 1000;
     color: white;

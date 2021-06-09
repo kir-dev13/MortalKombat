@@ -35,6 +35,7 @@ function changeHP(damageValue) {
     if (this.hp <= 0) {
         this.hp = 0;
         $randomBtn.disabled = true;
+        $randomBtn.style.backgroundColor = "grey";
     }
     renderLife.call(this);
     console.log(
@@ -55,11 +56,11 @@ function randomizer(max) {
     return Math.floor(Math.random() * max) + 1;
 }
 
-function appendElement(parentSelector, tag, className = "") {
+function appendElement(parentSelector, tag, ...classNames) {
     const $tag = document.createElement(tag);
     document.querySelector(parentSelector).appendChild($tag);
-    if (className) {
-        $tag.classList.add(className);
+    if (classNames[0]) {
+        $tag.classList.add(...classNames);
     }
 
     return $tag;
@@ -107,32 +108,54 @@ function createPlayer(playerObj) {
 }
 
 function titleWins(...players) {
+    let winTitle = undefined;
     if (players.every((player) => player.hp === 0)) {
-        const winsTitle = appendElement(".arenas", "div", "winTitle");
-        winsTitle.innerText = "ничья";
+        winTitle = appendElement(".arenas", "div", "winTitle");
+        winTitle.innerText = "ничья";
         createReloadButton();
-        return;
-    }
-    players.forEach((player) => {
-        if (player.hp === 0) {
-            createReloadButton();
-            const winsTitle = appendElement(".arenas", "div", "winTitle");
-            switch (player.player) {
-                case 1:
-                    winsTitle.innerText = player2.name + " выиграл";
-                    break;
-                case 2:
-                    winsTitle.innerText = player1.name + " выиграл";
-                    break;
+    } else {
+        players.forEach((player) => {
+            if (player.hp === 0) {
+                createReloadButton();
+                winTitle = appendElement(".arenas", "div", "winTitle");
+                switch (player.player) {
+                    case 1:
+                        winTitle.innerText = player2.name + " выиграл";
+                        break;
+                    case 2:
+                        winTitle.innerText = player1.name + " выиграл";
+                        break;
+                }
             }
-        }
-    });
+        });
+    }
+    if (winTitle) {
+        const winTitle2 = $arenas.appendChild(winTitle.cloneNode(true));
+        winTitle2.classList.add("animate__animated", "animate__fadeOutUp");
+        setTimeout(() => winTitle2.remove(), 1000);
+        console.log(
+            "🚀 ~ file: main.js ~ line 133 ~ titleWins ~ winTitle",
+            winTitle
+        );
+    }
 }
 
 function createReloadButton() {
     appendElement(".arenas", "div", "reloadWrap");
-    const restartBtn = appendElement(".reloadWrap", "button", "button");
+    const restartBtn = appendElement(
+        ".reloadWrap",
+        "button",
+        "button",
+        "button_restart",
+        "animate__animated",
+        "animate__bounceInDown"
+    );
     restartBtn.innerText = "Restart";
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
     restartBtn.addEventListener("click", () => {
         window.location.reload();
     });
