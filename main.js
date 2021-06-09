@@ -1,6 +1,15 @@
 "use strict";
 const $arenas = document.querySelector(".arenas");
-const $randomBtn = $arenas.querySelector(".button");
+// const $randomBtn = $arenas.querySelector(".button");
+
+const $formFight = document.querySelector(".control");
+
+const HIT = {
+    head: 30,
+    body: 25,
+    foot: 20,
+};
+const ATTACK = ["head", "body", "foot"];
 
 const player1 = {
     player: 1,
@@ -13,7 +22,7 @@ const player1 = {
     attack() {
         console.log(this.name + " fight");
     },
-    changeHP: changeHP,
+    changeHP,
 };
 
 const player2 = {
@@ -27,19 +36,19 @@ const player2 = {
     attack() {
         console.log(this.name + " fight");
     },
-    changeHP: changeHP,
+    changeHP,
 };
 
 function changeHP(damageValue) {
     this.hp -= damageValue;
     if (this.hp <= 0) {
         this.hp = 0;
-        $randomBtn.disabled = true;
-        $randomBtn.style.backgroundColor = "grey";
+        // $randomBtn.disabled = true;
+        // $randomBtn.style.backgroundColor = "grey";
     }
     renderLife.call(this);
     console.log(
-        `%c${this.name + " нанёс урон " + damageValue}`,
+        `%c${this.name + " получил урон " + damageValue}`,
         `color: ${this.color};`
     );
 }
@@ -164,10 +173,53 @@ function createReloadButton() {
 createPlayer(player1);
 createPlayer(player2);
 
-$randomBtn.addEventListener("click", () => {
-    player1.changeHP(randomizer(20));
-    player2.changeHP(randomizer(20));
-    // changeHP.call(player1, randomizer(20));
-    // changeHP.call(player2, randomizer(20));
+function enemyAttack() {
+    const hit = ATTACK[randomizer(3) - 1];
+
+    const defence = ATTACK[randomizer(3) - 1];
+    return {
+        value: randomizer(HIT[hit]),
+        hit,
+        defence,
+    };
+}
+
+$formFight.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const enemy = enemyAttack();
+    const playerAttack = {};
+
+    for (let item of $formFight) {
+        if (item.checked && item.name === "hit") {
+            playerAttack.value = randomizer(HIT[item.value]);
+            playerAttack.hit = item.value;
+        }
+        if (item.checked && item.name === "defence") {
+            playerAttack.defence = item.value;
+        }
+        item.checked = false;
+    }
+    console.log("a ", playerAttack);
+    console.log("e ", enemy);
+
+    fight(player2, playerAttack, enemy);
+    fight(player1, enemy, playerAttack);
+
     titleWins(player1, player2);
 });
+
+function fight(player, attack, defence) {
+    if (attack.hit != defence.defence) {
+        player.changeHP(attack.value);
+    } else {
+        console.log(player.name + " поставил блок");
+    }
+}
+
+// $randomBtn.addEventListener("click", () => {
+//     player1.changeHP(randomizer(20));
+//     player2.changeHP(randomizer(20));
+//     // changeHP.call(player1, randomizer(20));
+//     // changeHP.call(player2, randomizer(20));
+//     titleWins(player1, player2);
+// });
