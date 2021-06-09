@@ -19,11 +19,9 @@ const player1 = {
     weapon: ["гарпун", "огонь"],
     color: "yellow",
 
-    playerAttack() {
-        console.log(this.name + " fight");
-    },
+    attack: {},
     changeHP,
-    fight,
+    damage,
 };
 
 const player2 = {
@@ -34,11 +32,9 @@ const player2 = {
     weapon: ["лёд", "снег"],
     color: "lightblue",
 
-    attack() {
-        console.log(this.name + " fight");
-    },
+    attack: {},
     changeHP,
-    fight,
+    damage,
 };
 
 function changeHP(damageValue) {
@@ -144,10 +140,6 @@ function titleWins(...players) {
         const winTitle2 = $arenas.appendChild(winTitle.cloneNode(true));
         winTitle2.classList.add("animate__animated", "animate__fadeOutUp");
         setTimeout(() => winTitle2.remove(), 1000);
-        console.log(
-            "🚀 ~ file: main.js ~ line 133 ~ titleWins ~ winTitle",
-            winTitle
-        );
     }
 }
 
@@ -188,30 +180,29 @@ function enemyAttack() {
 
 $formFight.addEventListener("submit", (e) => {
     e.preventDefault();
-    const enemy = enemyAttack();
-    const playerAttack = {};
+    player2.attack = enemyAttack();
 
     for (let item of $formFight) {
         if (item.checked && item.name === "hit") {
-            playerAttack.value = randomizer(HIT[item.value]);
-            playerAttack.hit = item.value;
+            player1.attack.value = randomizer(HIT[item.value]);
+            player1.attack.hit = item.value;
         }
         if (item.checked && item.name === "defence") {
-            playerAttack.defence = item.value;
+            player1.attack.defence = item.value;
         }
         item.checked = false;
     }
-    console.log("a ", playerAttack);
-    console.log("e ", enemy);
+    console.log("player1 ", player1.attack);
+    console.log("player2 ", player2.attack);
 
-    player1.fight(playerAttack, enemy);
-    player2.fight(enemy, playerAttack);
+    player1.damage(player2.attack);
+    player2.damage(player1.attack);
 
     titleWins(player1, player2);
 });
 
-function fight(attack, defence) {
-    if (attack.hit != defence.defence) {
+function damage(attack) {
+    if (attack.hit != this.defence) {
         this.changeHP(attack.value);
     } else {
         console.log(this.name + " поставил блок");
