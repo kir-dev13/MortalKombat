@@ -19,10 +19,11 @@ const player1 = {
     weapon: ["гарпун", "огонь"],
     color: "yellow",
 
-    attack() {
+    playerAttack() {
         console.log(this.name + " fight");
     },
     changeHP,
+    fight,
 };
 
 const player2 = {
@@ -37,6 +38,7 @@ const player2 = {
         console.log(this.name + " fight");
     },
     changeHP,
+    fight,
 };
 
 function changeHP(damageValue) {
@@ -202,17 +204,17 @@ $formFight.addEventListener("submit", (e) => {
     console.log("a ", playerAttack);
     console.log("e ", enemy);
 
-    fight(player2, playerAttack, enemy);
-    fight(player1, enemy, playerAttack);
+    player1.fight(playerAttack, enemy);
+    player2.fight(enemy, playerAttack);
 
     titleWins(player1, player2);
 });
 
-function fight(player, attack, defence) {
+function fight(attack, defence) {
     if (attack.hit != defence.defence) {
-        player.changeHP(attack.value);
+        this.changeHP(attack.value);
     } else {
-        console.log(player.name + " поставил блок");
+        console.log(this.name + " поставил блок");
     }
 }
 
