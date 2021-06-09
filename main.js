@@ -43,6 +43,9 @@ function changeHP(damageValue) {
         this.hp = 0;
         // $randomBtn.disabled = true;
         // $randomBtn.style.backgroundColor = "grey";
+        const fightBtn = $formFight.querySelector(".button");
+        fightBtn.style.backgroundColor = "grey";
+        fightBtn.disabled = true;
     }
     renderLife.call(this);
     console.log(
@@ -118,7 +121,7 @@ function titleWins(...players) {
     let winTitle = undefined;
     if (players.every((player) => player.hp === 0)) {
         winTitle = appendElement(".arenas", "div", "winTitle");
-        winTitle.innerText = "ничья";
+        winTitle.innerText = "DRAW";
         createReloadButton();
     } else {
         players.forEach((player) => {
@@ -127,10 +130,10 @@ function titleWins(...players) {
                 winTitle = appendElement(".arenas", "div", "winTitle");
                 switch (player.player) {
                     case 1:
-                        winTitle.innerText = player2.name + " выиграл";
+                        winTitle.innerText = player2.name + " WINS";
                         break;
                     case 2:
-                        winTitle.innerText = player1.name + " выиграл";
+                        winTitle.innerText = player1.name + " WINS";
                         break;
                 }
             }
@@ -178,10 +181,7 @@ function enemyAttack() {
     };
 }
 
-$formFight.addEventListener("submit", (e) => {
-    e.preventDefault();
-    player2.attack = enemyAttack();
-
+function playerAttack() {
     for (let item of $formFight) {
         if (item.checked && item.name === "hit") {
             player1.attack.value = randomizer(HIT[item.value]);
@@ -192,6 +192,13 @@ $formFight.addEventListener("submit", (e) => {
         }
         item.checked = false;
     }
+}
+
+$formFight.addEventListener("submit", (e) => {
+    e.preventDefault();
+    player2.attack = enemyAttack();
+
+    playerAttack();
     console.log("player1 ", player1.attack);
     console.log("player2 ", player2.attack);
 
