@@ -1,6 +1,51 @@
 "use strict";
+// import logs from "./logs.js";
+
+const logs = {
+    start: "Часы показывали [time], когда [player1] и [player2] бросили вызов друг другу.",
+    end: [
+        "Результат удара [playerWins]: [playerLose] - труп",
+        "[playerLose] погиб от удара бойца [playerWins]",
+        "Результат боя: [playerLose] - жертва, [playerWins] - убийца",
+    ],
+    hit: [
+        "[playerDefence] пытался сконцентрироваться, но [playerKick] разбежавшись раздробил копчиком левое ухо врага.",
+        "[playerDefence] расстроился, как вдруг, неожиданно [playerKick] случайно раздробил грудью грудину противника.",
+        "[playerDefence] зажмурился, а в это время [playerKick], прослезившись, раздробил кулаком пах оппонента.",
+        "[playerDefence] чесал <вырезано цензурой>, и внезапно неустрашимый [playerKick] отчаянно размозжил грудью левый бицепс оппонента.",
+        "[playerDefence] задумался, но внезапно [playerKick] случайно влепил грубый удар копчиком в пояс оппонента.",
+        "[playerDefence] ковырялся в зубах, но [playerKick] проснувшись влепил тяжелый удар пальцем в кадык врага.",
+        "[playerDefence] вспомнил что-то важное, но внезапно [playerKick] зевнув, размозжил открытой ладонью челюсть противника.",
+        "[playerDefence] осмотрелся, и в это время [playerKick] мимоходом раздробил стопой аппендикс соперника.",
+        "[playerDefence] кашлянул, но внезапно [playerKick] показав палец, размозжил пальцем грудь соперника.",
+        "[playerDefence] пытался что-то сказать, а жестокий [playerKick] проснувшись размозжил копчиком левую ногу противника.",
+        "[playerDefence] забылся, как внезапно безумный [playerKick] со скуки, влепил удар коленом в левый бок соперника.",
+        "[playerDefence] поперхнулся, а за это [playerKick] мимоходом раздробил коленом висок врага.",
+        "[playerDefence] расстроился, а в это время наглый [playerKick] пошатнувшись размозжил копчиком губы оппонента.",
+        "[playerDefence] осмотрелся, но внезапно [playerKick] робко размозжил коленом левый глаз противника.",
+        "[playerDefence] осмотрелся, а [playerKick] вломил дробящий удар плечом, пробив блок, куда обычно не бьют оппонента.",
+        "[playerDefence] ковырялся в зубах, как вдруг, неожиданно [playerKick] отчаянно размозжил плечом мышцы пресса оппонента.",
+        "[playerDefence] пришел в себя, и в это время [playerKick] провел разбивающий удар кистью руки, пробив блок, в голень противника.",
+        "[playerDefence] пошатнулся, а в это время [playerKick] хихикая влепил грубый удар открытой ладонью по бедрам врага.",
+    ],
+    defence: [
+        "[playerKick] потерял момент и храбрый [playerDefence] отпрыгнул от удара открытой ладонью в ключицу.",
+        "[playerKick] не контролировал ситуацию, и потому [playerDefence] поставил блок на удар пяткой в правую грудь.",
+        "[playerKick] потерял момент и [playerDefence] поставил блок на удар коленом по селезенке.",
+        "[playerKick] поскользнулся и задумчивый [playerDefence] поставил блок на тычок головой в бровь.",
+        "[playerKick] старался провести удар, но непобедимый [playerDefence] ушел в сторону от удара копчиком прямо в пятку.",
+        "[playerKick] обманулся и жестокий [playerDefence] блокировал удар стопой в солнечное сплетение.",
+        "[playerKick] не думал о бое, потому расстроенный [playerDefence] отпрыгнул от удара кулаком куда обычно не бьют.",
+        "[playerKick] обманулся и жестокий [playerDefence] блокировал удар стопой в солнечное сплетение.",
+    ],
+    draw: "Ничья - это тоже победа!",
+};
+
 const $arenas = document.querySelector(".arenas");
-// const $randomBtn = $arenas.querySelector(".button");
+const $chat = document.querySelector(".chat");
+let date = new Date();
+
+let time = `${date.getHours()}:${date.getMinutes()}`;
 
 const $formFight = document.querySelector(".control");
 
@@ -118,22 +163,43 @@ function createPlayer(playerObj) {
 }
 
 function titleWins(...players) {
-    let winTitle = undefined;
+    let winTitle = null;
     if (players.every((player) => player.hp === 0)) {
         winTitle = appendElement(".arenas", "div", "winTitle");
         winTitle.innerText = "DRAW";
+        $chat.insertAdjacentHTML(
+            "afterbegin",
+            `<p style='font-size: 1.5em'>${logs.draw}</p>`
+        );
         createReloadButton();
     } else {
         players.forEach((player) => {
             if (player.hp === 0) {
                 createReloadButton();
+
                 winTitle = appendElement(".arenas", "div", "winTitle");
                 switch (player.player) {
                     case 1:
                         winTitle.innerText = player2.name + " WINS";
+                        $chat.insertAdjacentHTML(
+                            "afterbegin",
+                            `<p style='font-size: 1.5em'>${logs.end[
+                                randomizer(logs.end.length) - 1
+                            ]
+                                .replace("[playerWins]", player2.name)
+                                .replace("[playerLose]", player1.name)}</p>`
+                        );
                         break;
                     case 2:
                         winTitle.innerText = player1.name + " WINS";
+                        $chat.insertAdjacentHTML(
+                            "afterbegin",
+                            `<p style='font-size: 1.5em'>${logs.end[
+                                randomizer(logs.end.length) - 1
+                            ]
+                                .replace("[playerWins]", player1.name)
+                                .replace("[playerLose]", player2.name)}</p>`
+                        );
                         break;
                 }
             }
@@ -170,6 +236,15 @@ function createReloadButton() {
 createPlayer(player1);
 createPlayer(player2);
 
+//* лог старта
+$chat.insertAdjacentHTML(
+    "afterbegin",
+    logs.start
+        .replace("[time]", `${date.getHours()}:${date.getMinutes()}`)
+        .replace("[player1]", player1.name)
+        .replace("[player2]", player2.name)
+);
+
 function enemyAttack() {
     const hit = ATTACK[randomizer(3) - 1];
 
@@ -199,27 +274,41 @@ $formFight.addEventListener("submit", (e) => {
     player2.attack = enemyAttack();
 
     playerAttack();
-    console.log("player1 ", player1.attack);
-    console.log("player2 ", player2.attack);
 
-    player1.damage(player2.attack);
-    player2.damage(player1.attack);
+    player1.damage(player2);
+    player2.damage(player1);
 
     titleWins(player1, player2);
 });
 
-function damage(attack) {
-    if (attack.hit != this.defence) {
-        this.changeHP(attack.value);
+function createLog(type, player2, attackValue = 0) {
+    const text = logs[type][randomizer(logs[type].length) - 1];
+    let color = null;
+    switch (player2.player) {
+        case 1:
+            color = "yellow";
+            break;
+        case 2:
+            color = "lightblue";
+            break;
+    }
+
+    const logItem = `<p style='color:${color};'>${text
+        .replace("[playerDefence]", this.name)
+        .replace(
+            "[playerKick]",
+            player2.name
+        )}; Повреждения: ${attackValue}hp; Осталось: ${this.hp}/100</p>`;
+
+    $chat.insertAdjacentHTML("afterbegin", logItem);
+}
+
+function damage(player) {
+    if (player.attack.hit != this.attack.defence) {
+        this.changeHP(player.attack.value);
+        createLog.call(this, "hit", player, player.attack.value);
     } else {
+        createLog.call(this, "defence", player);
         console.log(this.name + " поставил блок");
     }
 }
-
-// $randomBtn.addEventListener("click", () => {
-//     player1.changeHP(randomizer(20));
-//     player2.changeHP(randomizer(20));
-//     // changeHP.call(player1, randomizer(20));
-//     // changeHP.call(player2, randomizer(20));
-//     titleWins(player1, player2);
-// });
