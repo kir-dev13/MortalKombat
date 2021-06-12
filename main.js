@@ -1,6 +1,15 @@
 "use strict";
 const $arenas = document.querySelector(".arenas");
-const $randomBtn = $arenas.querySelector(".button");
+// const $randomBtn = $arenas.querySelector(".button");
+
+const $formFight = document.querySelector(".control");
+
+const HIT = {
+    head: 30,
+    body: 25,
+    foot: 20,
+};
+const ATTACK = ["head", "body", "foot"];
 
 const player1 = {
     player: 1,
@@ -10,10 +19,9 @@ const player1 = {
     weapon: ["гарпун", "огонь"],
     color: "yellow",
 
-    attack() {
-        console.log(this.name + " fight");
-    },
-    changeHP: changeHP,
+    attack: {},
+    changeHP,
+    damage,
 };
 
 const player2 = {
@@ -24,21 +32,24 @@ const player2 = {
     weapon: ["лёд", "снег"],
     color: "lightblue",
 
-    attack() {
-        console.log(this.name + " fight");
-    },
-    changeHP: changeHP,
+    attack: {},
+    changeHP,
+    damage,
 };
 
 function changeHP(damageValue) {
     this.hp -= damageValue;
     if (this.hp <= 0) {
         this.hp = 0;
-        $randomBtn.disabled = true;
+        // $randomBtn.disabled = true;
+        // $randomBtn.style.backgroundColor = "grey";
+        const fightBtn = $formFight.querySelector(".button");
+        fightBtn.style.backgroundColor = "grey";
+        fightBtn.disabled = true;
     }
     renderLife.call(this);
     console.log(
-        `%c${this.name + " нанёс урон " + damageValue}`,
+        `%c${this.name + " получил урон " + damageValue}`,
         `color: ${this.color};`
     );
 }
@@ -55,11 +66,11 @@ function randomizer(max) {
     return Math.floor(Math.random() * max) + 1;
 }
 
-function appendElement(parentSelector, tag, className = "") {
+function appendElement(parentSelector, tag, ...classNames) {
     const $tag = document.createElement(tag);
     document.querySelector(parentSelector).appendChild($tag);
-    if (className) {
-        $tag.classList.add(className);
+    if (classNames[0]) {
+        $tag.classList.add(...classNames);
     }
 
     return $tag;
@@ -107,32 +118,50 @@ function createPlayer(playerObj) {
 }
 
 function titleWins(...players) {
+    let winTitle = undefined;
     if (players.every((player) => player.hp === 0)) {
-        const winsTitle = appendElement(".arenas", "div", "winTitle");
-        winsTitle.innerText = "ничья";
+        winTitle = appendElement(".arenas", "div", "winTitle");
+        winTitle.innerText = "DRAW";
         createReloadButton();
-        return;
-    }
-    players.forEach((player) => {
-        if (player.hp === 0) {
-            createReloadButton();
-            const winsTitle = appendElement(".arenas", "div", "winTitle");
-            switch (player.player) {
-                case 1:
-                    winsTitle.innerText = player2.name + " выиграл";
-                    break;
-                case 2:
-                    winsTitle.innerText = player1.name + " выиграл";
-                    break;
+    } else {
+        players.forEach((player) => {
+            if (player.hp === 0) {
+                createReloadButton();
+                winTitle = appendElement(".arenas", "div", "winTitle");
+                switch (player.player) {
+                    case 1:
+                        winTitle.innerText = player2.name + " WINS";
+                        break;
+                    case 2:
+                        winTitle.innerText = player1.name + " WINS";
+                        break;
+                }
             }
-        }
-    });
+        });
+    }
+    if (winTitle) {
+        const winTitle2 = $arenas.appendChild(winTitle.cloneNode(true));
+        winTitle2.classList.add("animate__animated", "animate__fadeOutUp");
+        setTimeout(() => winTitle2.remove(), 1000);
+    }
 }
 
 function createReloadButton() {
     appendElement(".arenas", "div", "reloadWrap");
-    const restartBtn = appendElement(".reloadWrap", "button", "button");
+    const restartBtn = appendElement(
+        ".reloadWrap",
+        "button",
+        "button",
+        "button_restart",
+        "animate__animated",
+        "animate__bounceInDown"
+    );
     restartBtn.innerText = "Restart";
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
+    appendElement(".button_restart", "span", "drop");
     restartBtn.addEventListener("click", () => {
         window.location.reload();
     });
@@ -141,10 +170,56 @@ function createReloadButton() {
 createPlayer(player1);
 createPlayer(player2);
 
-$randomBtn.addEventListener("click", () => {
-    player1.changeHP(randomizer(20));
-    player2.changeHP(randomizer(20));
-    // changeHP.call(player1, randomizer(20));
-    // changeHP.call(player2, randomizer(20));
+function enemyAttack() {
+    const hit = ATTACK[randomizer(3) - 1];
+
+    const defence = ATTACK[randomizer(3) - 1];
+    return {
+        value: randomizer(HIT[hit]),
+        hit,
+        defence,
+    };
+}
+
+function playerAttack() {
+    for (let item of $formFight) {
+        if (item.checked && item.name === "hit") {
+            player1.attack.value = randomizer(HIT[item.value]);
+            player1.attack.hit = item.value;
+        }
+        if (item.checked && item.name === "defence") {
+            player1.attack.defence = item.value;
+        }
+        item.checked = false;
+    }
+}
+
+$formFight.addEventListener("submit", (e) => {
+    e.preventDefault();
+    player2.attack = enemyAttack();
+
+    playerAttack();
+    console.log("player1 ", player1.attack);
+    console.log("player2 ", player2.attack);
+
+    player1.damage(player2.attack);
+    player2.damage(player1.attack);
+
     titleWins(player1, player2);
 });
+
+function damage(attack) {
+    if (attack.hit != this.defence) {
+        this.changeHP(attack.value);
+    } else {
+        console.log(this.name + " поставил блок");
+    }
+}
+
+// $randomBtn.addEventListener("click", () => {
+//     player1.changeHP(randomizer(20));
+//     player2.changeHP(randomizer(20));
+//     // changeHP.call(player1, randomizer(20));
+//     // changeHP.call(player2, randomizer(20));
+//     titleWins(player1, player2);
+// });

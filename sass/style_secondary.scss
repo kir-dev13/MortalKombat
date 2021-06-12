@@ -1,0 +1,62 @@
+.drop {
+    width: 0.4em;
+    height: 0.45em;
+    border-radius: 0 100% 100% 100%;
+    background-color: #cd0e03;
+    position: absolute;
+    top: 72%;
+    animation-name: colors, drop;
+    // animation: drop 3s infinite both;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
+    animation-duration: 3s;
+
+    &:nth-child(1) {
+        left: 14%;
+    }
+
+    &:nth-child(2) {
+        left: 39%;
+        animation-delay: -0.4s;
+    }
+
+    &:nth-child(3) {
+        left: 55%;
+        animation-delay: -1.8s;
+    }
+
+    &:nth-child(4) {
+        left: 82%;
+        animation-delay: -0.8s;
+    }
+
+    &:nth-child(5) {
+        left: 92.5%;
+        animation-delay: -1.3s;
+    }
+}
+
+@keyframes drop {
+    0% {
+        transform: translateY(0) scaleX(0.85) rotate(45deg);
+        animation-timing-function: ease-out;
+    }
+    60% {
+        transform: translateY(120%) scaleX(0.85) rotate(45deg);
+        animation-timing-function: ease-in;
+    }
+    100% {
+        transform: translateY(58vh) scaleX(0.85) rotate(45deg);
+    }
+}
+@keyframes colors {
+    from {
+        background-color: #cd0e03;
+    }
+    80% {
+        background-color: #cd0e03;
+    }
+    to {
+        background-color: #5d3424;
+    }
+}
