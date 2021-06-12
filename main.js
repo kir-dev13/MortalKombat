@@ -1,6 +1,11 @@
 "use strict";
+import logs from "./logs.js";
+
 const $arenas = document.querySelector(".arenas");
-// const $randomBtn = $arenas.querySelector(".button");
+const $chat = document.querySelector(".chat");
+let date = new Date();
+
+let time = `${date.getHours()}:${date.getMinutes()}`;
 
 const $formFight = document.querySelector(".control");
 
@@ -118,22 +123,43 @@ function createPlayer(playerObj) {
 }
 
 function titleWins(...players) {
-    let winTitle = undefined;
+    let winTitle = null;
     if (players.every((player) => player.hp === 0)) {
         winTitle = appendElement(".arenas", "div", "winTitle");
         winTitle.innerText = "DRAW";
+        $chat.insertAdjacentHTML(
+            "afterbegin",
+            `<p style='font-size: 1.5em'>${logs.draw}</p>`
+        );
         createReloadButton();
     } else {
         players.forEach((player) => {
             if (player.hp === 0) {
                 createReloadButton();
+
                 winTitle = appendElement(".arenas", "div", "winTitle");
                 switch (player.player) {
                     case 1:
                         winTitle.innerText = player2.name + " WINS";
+                        $chat.insertAdjacentHTML(
+                            "afterbegin",
+                            `<p style='font-size: 1.5em'>${logs.end[
+                                randomizer(logs.end.length) - 1
+                            ]
+                                .replace("[playerWins]", player2.name)
+                                .replace("[playerLose]", player1.name)}</p>`
+                        );
                         break;
                     case 2:
                         winTitle.innerText = player1.name + " WINS";
+                        $chat.insertAdjacentHTML(
+                            "afterbegin",
+                            `<p style='font-size: 1.5em'>${logs.end[
+                                randomizer(logs.end.length) - 1
+                            ]
+                                .replace("[playerWins]", player1.name)
+                                .replace("[playerLose]", player2.name)}</p>`
+                        );
                         break;
                 }
             }
@@ -170,6 +196,15 @@ function createReloadButton() {
 createPlayer(player1);
 createPlayer(player2);
 
+//* лог старта
+$chat.insertAdjacentHTML(
+    "afterbegin",
+    logs.start
+        .replace("[time]", `${date.getHours()}:${date.getMinutes()}`)
+        .replace("[player1]", player1.name)
+        .replace("[player2]", player2.name)
+);
+
 function enemyAttack() {
     const hit = ATTACK[randomizer(3) - 1];
 
@@ -199,27 +234,41 @@ $formFight.addEventListener("submit", (e) => {
     player2.attack = enemyAttack();
 
     playerAttack();
-    console.log("player1 ", player1.attack);
-    console.log("player2 ", player2.attack);
 
-    player1.damage(player2.attack);
-    player2.damage(player1.attack);
+    player1.damage(player2);
+    player2.damage(player1);
 
     titleWins(player1, player2);
 });
 
-function damage(attack) {
-    if (attack.hit != this.defence) {
-        this.changeHP(attack.value);
+function createLog(type, player2, attackValue = 0) {
+    const text = logs[type][randomizer(logs[type].length) - 1];
+    let color = null;
+    switch (player2.player) {
+        case 1:
+            color = "yellow";
+            break;
+        case 2:
+            color = "lightblue";
+            break;
+    }
+
+    const logItem = `<p style='color:${color};'>${text
+        .replace("[playerDefence]", this.name)
+        .replace(
+            "[playerKick]",
+            player2.name
+        )}; Повреждения: ${attackValue}hp; Осталось: ${this.hp}/100</p>`;
+
+    $chat.insertAdjacentHTML("afterbegin", logItem);
+}
+
+function damage(player) {
+    if (player.attack.hit != this.attack.defence) {
+        this.changeHP(player.attack.value);
+        createLog.call(this, "hit", player, player.attack.value);
     } else {
+        createLog.call(this, "defence", player);
         console.log(this.name + " поставил блок");
     }
 }
-
-// $randomBtn.addEventListener("click", () => {
-//     player1.changeHP(randomizer(20));
-//     player2.changeHP(randomizer(20));
-//     // changeHP.call(player1, randomizer(20));
-//     // changeHP.call(player2, randomizer(20));
-//     titleWins(player1, player2);
-// });
